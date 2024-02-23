@@ -488,6 +488,13 @@ where
     /// `put_with_stream` has been used to write the file
     pub async fn finalize_put_stream(&mut self, stream: impl Write) -> FtpResult<()> {
         debug!("Finalizing put stream");
+
+        use futures_lite::io::AsyncWriteExt;
+        let mut stream = std::pin::pin!(stream);
+        stream
+            .close()
+            .await
+            .map_err(|e| FtpError::ConnectionError(e))?;
         // Drop stream NOTE: must be done first, otherwise server won't return any response
         drop(stream);
         trace!("Stream dropped");
