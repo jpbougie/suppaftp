@@ -490,7 +490,7 @@ where
         debug!("Finalizing put stream");
 
         use futures_lite::io::AsyncWriteExt;
-        let mut stream = std::pin::pin!(stream);
+        let mut stream = Box::pin(stream);
         stream
             .close()
             .await
